@@ -4,6 +4,83 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DeepLink — Open in App</title>
+<script>
+/* ── REDIRECT MODE ──────────────────────────────────────────────────────
+   When this page is visited with ?ios=...&android=...&fallback=...
+   it acts as a smart redirect page — NOT a generator.
+   This runs synchronously before the DOM renders to avoid flash.
+──────────────────────────────────────────────────────────────────────── */
+(function() {
+  var params = new URLSearchParams(window.location.search);
+  var iosScheme     = params.get('ios');
+  var androidScheme = params.get('android');
+  var fallback      = params.get('fallback');
+
+  // Only activate redirect mode when all three params are present
+  if (!iosScheme || !androidScheme || !fallback) return;
+
+  // Replace the entire page with a minimal redirect UI
+  document.addEventListener('DOMContentLoaded', function() {
+    document.documentElement.innerHTML = '<!DOCTYPE html><html lang="en"><head>' +
+      '<meta charset="UTF-8">' +
+      '<meta name="viewport" content="width=device-width,initial-scale=1">' +
+      '<title>Opening app…</title>' +
+      '<style>' +
+        '*{margin:0;padding:0;box-sizing:border-box}' +
+        'body{background:#0a0a0f;color:#e8e8f0;font-family:system-ui,sans-serif;' +
+          'display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center}' +
+        '.card{max-width:340px;width:100%}' +
+        '.icon{font-size:3rem;margin-bottom:16px}' +
+        'h2{font-size:1.35rem;font-weight:700;margin-bottom:10px;letter-spacing:-0.02em}' +
+        'p{color:#5a5a7a;font-size:14px;line-height:1.6;margin-bottom:28px}' +
+        '.btn{display:inline-block;background:#7fffb2;color:#000;padding:13px 32px;' +
+          'border-radius:100px;text-decoration:none;font-weight:700;font-size:15px;' +
+          'transition:background 0.2s}' +
+        '.btn:hover{background:#a0ffcc}' +
+        '.note{margin-top:16px;font-size:12px;color:#3a3a5a}' +
+      '</style>' +
+      '</head><body>' +
+        '<div class="card">' +
+          '<div class="icon">📲</div>' +
+          '<h2>Opening in app…</h2>' +
+          '<p>If the app doesn\'t open automatically in the next 2 seconds, tap the button below.</p>' +
+          '<a class="btn" href="' + fallback + '">Open in Browser instead</a>' +
+          '<div class="note">Deeplink powered by deeplink-bay.vercel.app</div>' +
+        '</div>' +
+      '</body></html>';
+
+    // Detect device and fire the correct URI scheme
+    var ua = navigator.userAgent;
+    var isIOS     = /iPhone|iPad|iPod/i.test(ua);
+    var isAndroid = /Android/i.test(ua);
+    var scheme    = isIOS ? iosScheme : isAndroid ? androidScheme : null;
+
+    if (scheme) {
+      // Attempt native app open
+      var iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+
+      // Use iframe trick for iOS (avoids "cannot open page" error dialog on some browsers)
+      // Then fallback after 2s if app not installed
+      try { iframe.src = scheme; } catch(e) {}
+
+      // Also try direct location change for Android reliability
+      if (isAndroid) {
+        try { window.location.href = scheme; } catch(e) {}
+      }
+
+      // Fallback timer — if app opened, the timer won't matter (page loses focus)
+      setTimeout(function() {
+        window.location.href = fallback;
+      }, 2000);
+    } else {
+      // Desktop — just go straight to the web URL
+      window.location.href = fallback;
+    }
+  });
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
