@@ -6,79 +6,143 @@
 <title>DeepLink — Open in App</title>
 <script>
 /* ── REDIRECT MODE ──────────────────────────────────────────────────────
-   When this page is visited with ?ios=...&android=...&fallback=...
-   it acts as a smart redirect page — NOT a generator.
-   This runs synchronously before the DOM renders to avoid flash.
+   Dual-mode page: if ?ios=&android=&fallback= params are present,
+   this page acts as a smart deeplink redirect instead of the generator.
+   Runs immediately — before any DOM renders — to avoid flash of UI.
 ──────────────────────────────────────────────────────────────────────── */
-(function() {
+(function () {
   var params = new URLSearchParams(window.location.search);
-  var iosScheme     = params.get('ios');
-  var androidScheme = params.get('android');
-  var fallback      = params.get('fallback');
+  var d      = params.get('d');
 
-  // Only activate redirect mode when all three params are present
+  // Support legacy ?ios=&android=&fallback= format too
+  var iosScheme, androidScheme, fallback;
+  if (d) {
+    try {
+      var decoded = JSON.parse(decodeURIComponent(escape(atob(d))));
+      iosScheme     = decoded.ios;
+      androidScheme = decoded.android;
+      fallback      = decoded.fallback;
+    } catch(e) { return; }
+  } else {
+    iosScheme     = params.get('ios');
+    androidScheme = params.get('android');
+    fallback      = params.get('fallback');
+  }
+
+  // Not redirect mode — let the generator render normally
   if (!iosScheme || !androidScheme || !fallback) return;
 
-  // Replace the entire page with a minimal redirect UI
-  document.addEventListener('DOMContentLoaded', function() {
-    document.documentElement.innerHTML = '<!DOCTYPE html><html lang="en"><head>' +
+  // Prevent the full generator page from ever rendering
+  document.addEventListener('DOMContentLoaded', function () {
+
+    // Render a clean redirect screen
+    document.documentElement.innerHTML =
+      '<html lang="en"><head>' +
       '<meta charset="UTF-8">' +
       '<meta name="viewport" content="width=device-width,initial-scale=1">' +
-      '<title>Opening app…</title>' +
+      '<title>Opening app\u2026</title>' +
       '<style>' +
         '*{margin:0;padding:0;box-sizing:border-box}' +
         'body{background:#0a0a0f;color:#e8e8f0;font-family:system-ui,sans-serif;' +
-          'display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;text-align:center}' +
+          'display:flex;align-items:center;justify-content:center;' +
+          'min-height:100vh;padding:24px;text-align:center}' +
         '.card{max-width:340px;width:100%}' +
-        '.icon{font-size:3rem;margin-bottom:16px}' +
-        'h2{font-size:1.35rem;font-weight:700;margin-bottom:10px;letter-spacing:-0.02em}' +
+        '.icon{font-size:3rem;margin-bottom:20px;animation:bob 1.4s ease-in-out infinite}' +
+        '@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}' +
+        'h2{font-size:1.3rem;font-weight:700;margin-bottom:10px}' +
         'p{color:#5a5a7a;font-size:14px;line-height:1.6;margin-bottom:28px}' +
         '.btn{display:inline-block;background:#7fffb2;color:#000;padding:13px 32px;' +
-          'border-radius:100px;text-decoration:none;font-weight:700;font-size:15px;' +
-          'transition:background 0.2s}' +
-        '.btn:hover{background:#a0ffcc}' +
-        '.note{margin-top:16px;font-size:12px;color:#3a3a5a}' +
+          'border-radius:100px;text-decoration:none;font-weight:700;font-size:15px}' +
+        '.note{margin-top:16px;font-size:11px;color:#2e2e4a}' +
       '</style>' +
       '</head><body>' +
         '<div class="card">' +
           '<div class="icon">📲</div>' +
-          '<h2>Opening in app…</h2>' +
-          '<p>If the app doesn\'t open automatically in the next 2 seconds, tap the button below.</p>' +
-          '<a class="btn" href="' + fallback + '">Open in Browser instead</a>' +
-          '<div class="note">Deeplink powered by deeplink-bay.vercel.app</div>' +
+          '<h2 id="headline">Opening app\u2026</h2>' +
+          '<p id="sub">Launching the app on your device. If nothing happens, tap below.</p>' +
+          '<a class="btn" id="fallbackBtn" href="">Open in Browser</a>' +
+          '<div class="note">deeplink-bay.vercel.app</div>' +
         '</div>' +
       '</body></html>';
 
-    // Detect device and fire the correct URI scheme
-    var ua = navigator.userAgent;
+    // Safely set the fallback href (avoids XSS from raw string concat)
+    document.getElementById('fallbackBtn').href = fallback;
+
+    var ua        = navigator.userAgent;
     var isIOS     = /iPhone|iPad|iPod/i.test(ua);
     var isAndroid = /Android/i.test(ua);
     var scheme    = isIOS ? iosScheme : isAndroid ? androidScheme : null;
 
-    if (scheme) {
-      // Attempt native app open
-      var iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-
-      // Use iframe trick for iOS (avoids "cannot open page" error dialog on some browsers)
-      // Then fallback after 2s if app not installed
-      try { iframe.src = scheme; } catch(e) {}
-
-      // Also try direct location change for Android reliability
-      if (isAndroid) {
-        try { window.location.href = scheme; } catch(e) {}
-      }
-
-      // Fallback timer — if app opened, the timer won't matter (page loses focus)
-      setTimeout(function() {
-        window.location.href = fallback;
-      }, 2000);
-    } else {
-      // Desktop — just go straight to the web URL
+    if (!scheme) {
+      // Desktop: just navigate to the web URL directly
       window.location.href = fallback;
+      return;
     }
-  });
+
+    /* ── Android deep-link strategy ──────────────────────────────────────
+       1. Navigate to the URI scheme via window.location.href
+       2. Listen for visibilitychange — if the page goes hidden, the app
+          opened successfully → cancel the fallback timer
+       3. If the page stays visible after the timeout, the app isn't
+          installed → send to fallback web URL
+    ─────────────────────────────────────────────────────────────────────*/
+    if (isAndroid) {
+      var appOpened    = false;
+      var fallbackFired = false;
+
+      // When the user switches to the app the page becomes hidden
+      var onHide = function () {
+        if (document.hidden) {
+          appOpened = true;   // App launched — kill the fallback
+        }
+      };
+      document.addEventListener('visibilitychange', onHide);
+
+      // Also catch pagehide (fired on some Android browsers)
+      window.addEventListener('pagehide', function () { appOpened = true; });
+
+      // Fire the intent
+      window.location.href = scheme;
+
+      // Give Android 2.5 s to switch to the app before we redirect
+      setTimeout(function () {
+        document.removeEventListener('visibilitychange', onHide);
+        if (!appOpened && !fallbackFired) {
+          fallbackFired = true;
+          window.location.href = fallback;
+        }
+      }, 2500);
+    }
+
+    /* ── iOS deep-link strategy ──────────────────────────────────────────
+       Safari blocks window.location URI scheme changes that originate
+       from JS without a user gesture. The reliable trick is a hidden
+       <a> tag that we programmatically click — this counts as a gesture
+       proxy. We also set a fallback timer cancelled by visibilitychange.
+    ─────────────────────────────────────────────────────────────────────*/
+    if (isIOS) {
+      var iosOpened = false;
+
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) iosOpened = true;
+      });
+      window.addEventListener('pagehide', function () { iosOpened = true; });
+
+      // Create an invisible link and click it — Safari allows this
+      var a = document.createElement('a');
+      a.href = scheme;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(function () {
+        if (!iosOpened) {
+          window.location.href = fallback;
+        }
+      }, 2500);
+    }
+
+  }); // DOMContentLoaded
 })();
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -871,8 +935,16 @@ async function generateDeeplink() {
     return;
   }
 
-  // Build long redirect URL
-  const longUrl = `${REDIRECT_BASE}?ios=${encodeURIComponent(matched.ios)}&android=${encodeURIComponent(matched.android)}&fallback=${encodeURIComponent(url)}&platform=${encodeURIComponent(platform.name)}`;
+  // Build long redirect URL.
+  // Base64-encode the whole payload as a single ?d= param so URL shorteners
+  // cannot corrupt the nested ios/android/fallback values (they contain :// etc).
+  const payload = btoa(unescape(encodeURIComponent(JSON.stringify({
+    ios: matched.ios,
+    android: matched.android,
+    fallback: url,
+    platform: platform.name
+  }))));
+  const longUrl = `${REDIRECT_BASE}?d=${encodeURIComponent(payload)}`;
 
   // Populate technical fields immediately
   document.getElementById('deeplink-ios').textContent = matched.ios;
