@@ -29,7 +29,6 @@
     overflow-x: hidden;
   }
 
-  /* Background grid */
   body::before {
     content: '';
     position: fixed;
@@ -42,7 +41,6 @@
     z-index: 0;
   }
 
-  /* Orbs */
   .orb {
     position: fixed;
     border-radius: 50%;
@@ -69,11 +67,7 @@
     padding: 60px 24px 80px;
   }
 
-  /* Header */
-  header {
-    text-align: center;
-    margin-bottom: 60px;
-  }
+  header { text-align: center; margin-bottom: 56px; }
 
   .badge {
     display: inline-flex;
@@ -136,7 +130,6 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
-  /* Platform selector */
   .platforms {
     display: flex;
     gap: 10px;
@@ -163,25 +156,10 @@
     letter-spacing: 0.02em;
   }
 
-  .platform-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(127,255,178,0.05);
-    transform: translateY(-1px);
-  }
+  .platform-btn:hover { border-color: var(--accent); color: var(--accent); background: rgba(127,255,178,0.05); transform: translateY(-1px); }
+  .platform-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(127,255,178,0.08); }
+  .platform-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
-  .platform-btn.active {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(127,255,178,0.08);
-  }
-
-  .platform-btn svg {
-    width: 16px; height: 16px;
-    flex-shrink: 0;
-  }
-
-  /* Input area */
   .input-card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -192,9 +170,7 @@
     transition: border-color 0.3s ease;
   }
 
-  .input-card:focus-within {
-    border-color: rgba(127,255,178,0.3);
-  }
+  .input-card:focus-within { border-color: rgba(127,255,178,0.3); }
 
   .input-label {
     font-size: 11px;
@@ -206,11 +182,7 @@
     display: block;
   }
 
-  .url-input-wrap {
-    display: flex;
-    gap: 12px;
-    align-items: stretch;
-  }
+  .url-input-wrap { display: flex; gap: 12px; align-items: stretch; }
 
   .url-input {
     flex: 1;
@@ -241,41 +213,160 @@
     transition: all 0.2s ease;
     white-space: nowrap;
     letter-spacing: 0.02em;
+    position: relative;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
   }
 
-  .generate-btn:hover {
-    background: #a0ffcc;
-    transform: translateY(-1px);
-    box-shadow: 0 8px 24px rgba(127,255,178,0.25);
+  .generate-btn:hover:not(:disabled) { background: #a0ffcc; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(127,255,178,0.25); }
+  .generate-btn:active:not(:disabled) { transform: translateY(0); }
+  .generate-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #000;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .generate-btn.loading .spinner { display: block; }
+  .generate-btn.loading .btn-text { display: none; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* BIO LINK HERO */
+  .bio-hero {
+    background: linear-gradient(135deg, rgba(127,255,178,0.1), rgba(107,170,255,0.06));
+    border: 1px solid rgba(127,255,178,0.3);
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
   }
 
-  .generate-btn:active { transform: translateY(0); }
+  .bio-hero::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(127,255,178,0.12), transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .bio-hero-label {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .bio-hero-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+
+  .bio-link-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .bio-link-value {
+    flex: 1;
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(127,255,178,0.2);
+    border-radius: 10px;
+    padding: 13px 16px;
+    word-break: break-all;
+    min-width: 0;
+    transition: background 0.3s;
+  }
+
+  .bio-link-value.shimmer {
+    background: linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.09) 50%,rgba(255,255,255,0.04) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+    color: transparent;
+    user-select: none;
+  }
+
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+
+  .copy-bio-btn {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 22px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .copy-bio-btn:hover { background: #a0ffcc; transform: translateY(-1px); }
+  .copy-bio-btn.copied { background: #00cc6a; color: #fff; }
+  .copy-bio-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .shortener-status {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    margin-top: 10px;
+    min-height: 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .shortener-status.ok { color: var(--accent); }
+  .shortener-status.err { color: #ffb86c; }
 
   /* Results */
-  .results {
-    display: none;
-    flex-direction: column;
-    gap: 16px;
-    animation: fadeUp 0.5s ease both;
-  }
-
+  .results { display: none; flex-direction: column; gap: 14px; animation: fadeUp 0.5s ease both; }
   .results.visible { display: flex; }
 
   .result-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 22px 24px;
+    padding: 20px 22px;
     transition: border-color 0.2s;
   }
 
-  .result-card:hover { border-color: rgba(127,255,178,0.2); }
+  .result-card:hover { border-color: rgba(127,255,178,0.15); }
 
   .result-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .result-label {
@@ -288,11 +379,7 @@
     align-items: center;
     gap: 8px;
   }
-
-  .result-label .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-  }
+  .result-label .dot { width: 6px; height: 6px; border-radius: 50%; }
 
   .result-value {
     font-family: 'DM Mono', monospace;
@@ -302,8 +389,8 @@
     line-height: 1.6;
     background: rgba(255,255,255,0.03);
     border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 14px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
     border: 1px solid rgba(255,255,255,0.05);
   }
 
@@ -314,188 +401,77 @@
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 8px 14px;
+    padding: 7px 12px;
     font-family: 'DM Mono', monospace;
     font-size: 12px;
     color: var(--muted);
     cursor: pointer;
     transition: all 0.2s;
   }
+  .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .copy-btn.copied { border-color: var(--accent); color: var(--accent); background: rgba(127,255,178,0.08); }
 
-  .copy-btn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-
-  .copy-btn.copied {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(127,255,178,0.08);
-  }
-
-  /* Preview section */
   .preview-card {
-    background: linear-gradient(135deg, rgba(127,255,178,0.05), rgba(107,170,255,0.05));
-    border: 1px solid rgba(127,255,178,0.15);
-    border-radius: 16px;
-    padding: 24px;
-  }
-
-  .preview-title {
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    color: var(--accent);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 16px;
-  }
-
-  .flow-diagram {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .flow-step {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .flow-arrow {
-    color: var(--muted);
-    font-size: 18px;
-  }
-
-  /* How it works */
-  .how-section {
-    margin-top: 60px;
-    animation: fadeUp 0.6s ease 0.4s both;
-  }
-
-  .section-title {
-    font-size: 11px;
-    font-family: 'DM Mono', monospace;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 24px;
-    text-align: center;
-  }
-
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
-  }
-
-  .step-card {
     background: var(--card);
     border: 1px solid var(--border);
     border-radius: 16px;
-    padding: 24px;
-    transition: border-color 0.2s, transform 0.2s;
+    padding: 22px;
   }
+  .preview-title { font-size:11px; font-family:'DM Mono',monospace; color:var(--muted); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:14px; }
+  .flow-diagram { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .flow-step { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; padding:9px 12px; font-size:12px; font-weight:600; }
+  .flow-arrow { color:var(--muted); font-size:14px; }
 
-  .step-card:hover {
-    border-color: rgba(127,255,178,0.2);
-    transform: translateY(-2px);
+  .details-toggle {
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    background:transparent; border:1px solid var(--border); border-radius:12px;
+    padding:14px 18px; font-family:'Syne',sans-serif; font-size:13px; font-weight:600;
+    color:var(--muted); cursor:pointer; transition:all 0.2s;
   }
+  .details-toggle:hover { border-color:rgba(127,255,178,0.2); color:var(--text); }
 
-  .step-num {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    margin-bottom: 12px;
-    opacity: 0.7;
-  }
-
-  .step-card h3 {
-    font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 8px;
-    letter-spacing: -0.01em;
-  }
-
-  .step-card p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-    font-weight: 400;
-  }
-
-  /* Redirect page generator */
-  .redirect-section {
-    margin-top: 24px;
-  }
+  .details-body { display:none; flex-direction:column; gap:12px; margin-top:12px; }
+  .details-body.open { display:flex; }
 
   .expand-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px 20px;
-    font-family: 'Syne', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    cursor: pointer;
-    transition: border-color 0.2s;
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:15px 18px; font-family:'Syne',sans-serif; font-size:13px; font-weight:600;
+    color:var(--text); cursor:pointer; transition:border-color 0.2s;
   }
-
-  .expand-btn:hover { border-color: rgba(127,255,178,0.3); }
+  .expand-btn:hover { border-color:rgba(127,255,178,0.3); }
 
   .code-block {
-    display: none;
-    background: #0d0d16;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 20px;
-    margin-top: 12px;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: #a0a0c0;
-    white-space: pre-wrap;
-    word-break: break-all;
-    line-height: 1.7;
-    max-height: 300px;
-    overflow-y: auto;
+    display:none; background:#0d0d16; border:1px solid var(--border); border-radius:12px;
+    padding:18px; margin-top:10px; font-family:'DM Mono',monospace; font-size:11.5px;
+    color:#a0a0c0; white-space:pre-wrap; word-break:break-all; line-height:1.7;
+    max-height:260px; overflow-y:auto;
   }
-
-  .code-block.visible { display: block; }
+  .code-block.visible { display:block; }
 
   .error-msg {
-    color: var(--accent2);
-    font-size: 13px;
-    font-family: 'DM Mono', monospace;
-    padding: 12px 16px;
-    background: rgba(255,107,107,0.08);
-    border: 1px solid rgba(255,107,107,0.2);
-    border-radius: 10px;
-    margin-top: 12px;
-    display: none;
+    color:var(--accent2); font-size:13px; font-family:'DM Mono',monospace;
+    padding:12px 16px; background:rgba(255,107,107,0.08);
+    border:1px solid rgba(255,107,107,0.2); border-radius:10px; margin-top:12px; display:none;
   }
+  .error-msg.visible { display:block; }
 
-  .error-msg.visible { display: block; }
+  .how-section { margin-top:60px; animation:fadeUp 0.6s ease 0.4s both; }
+  .section-title { font-size:11px; font-family:'DM Mono',monospace; color:var(--muted); letter-spacing:0.15em; text-transform:uppercase; margin-bottom:24px; text-align:center; }
+  .steps-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; }
+  .step-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:22px; transition:border-color 0.2s,transform 0.2s; }
+  .step-card:hover { border-color:rgba(127,255,178,0.2); transform:translateY(-2px); }
+  .step-num { font-family:'DM Mono',monospace; font-size:11px; color:var(--accent); margin-bottom:10px; opacity:0.7; }
+  .step-card h3 { font-size:14px; font-weight:700; margin-bottom:7px; letter-spacing:-0.01em; }
+  .step-card p { font-size:13px; color:var(--muted); line-height:1.6; font-weight:400; }
 
-  footer {
-    text-align: center;
-    margin-top: 80px;
-    padding-top: 32px;
-    border-top: 1px solid var(--border);
-    font-size: 12px;
-    color: var(--muted);
-    font-family: 'DM Mono', monospace;
+  footer { text-align:center; margin-top:80px; padding-top:28px; border-top:1px solid var(--border); font-size:12px; color:var(--muted); font-family:'DM Mono',monospace; }
+
+  @media (max-width:560px) {
+    .url-input-wrap { flex-direction:column; }
+    .generate-btn { width:100%; justify-content:center; }
+    .bio-link-display { flex-direction:column; }
+    .copy-bio-btn { width:100%; justify-content:center; }
   }
 </style>
 </head>
@@ -510,7 +486,7 @@
   <header>
     <div class="badge">✦ deeplink generator</div>
     <h1>Open <span>any link</span><br>directly in-app</h1>
-    <p class="subtitle">Convert social media URLs into smart deeplinks. Drop them in your Instagram bio and let users open your profile instantly in the app.</p>
+    <p class="subtitle">Paste your social profile URL. Get a short link ready to drop in your Instagram bio — one tap opens the app instantly.</p>
   </header>
 
   <!-- Platform Selector -->
@@ -551,77 +527,101 @@
         class="url-input"
         placeholder="https://youtube.com/@yourchannel"
         oninput="clearError()"
+        onkeydown="if(event.key==='Enter') generateDeeplink()"
       />
-      <button class="generate-btn" onclick="generateDeeplink()">Generate →</button>
+      <button class="generate-btn" id="generateBtn" onclick="generateDeeplink()">
+        <div class="spinner"></div>
+        <span class="btn-text">Generate →</span>
+      </button>
     </div>
     <div class="error-msg" id="errorMsg"></div>
   </div>
 
   <!-- Results -->
   <div class="results" id="results">
-    <div class="result-card">
-      <div class="result-header">
-        <span class="result-label"><span class="dot" style="background:#7fffb2"></span>Deep Link (iOS)</span>
-        <button class="copy-btn" onclick="copyText('deeplink-ios', this)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy
+
+    <!-- ★ BIO LINK HERO -->
+    <div class="bio-hero">
+      <div class="bio-hero-label">★ &nbsp;Ready to paste in Instagram bio</div>
+      <div class="bio-hero-title">Your short deeplink</div>
+      <div class="bio-link-display">
+        <div class="bio-link-value shimmer" id="bioLinkValue">Generating short link…</div>
+        <button class="copy-bio-btn" id="copyBioBtn" onclick="copyBioLink()" disabled>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy link
         </button>
       </div>
-      <div class="result-value" id="deeplink-ios">—</div>
+      <div class="shortener-status" id="shortenerStatus">⏳ Calling URL shortener…</div>
     </div>
 
-    <div class="result-card">
-      <div class="result-header">
-        <span class="result-label"><span class="dot" style="background:#6baaff"></span>Deep Link (Android)</span>
-        <button class="copy-btn" onclick="copyText('deeplink-android', this)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy
-        </button>
+    <!-- Collapsible tech details -->
+    <button class="details-toggle" onclick="toggleDetails()">
+      <span>⟨/⟩ Technical deeplinks &amp; details</span>
+      <span id="detailsIcon">↓</span>
+    </button>
+
+    <div class="details-body" id="detailsBody">
+      <div class="result-card">
+        <div class="result-header">
+          <span class="result-label"><span class="dot" style="background:#7fffb2"></span>Deep Link (iOS)</span>
+          <button class="copy-btn" onclick="copyText('deeplink-ios', this)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="result-value" id="deeplink-ios">—</div>
       </div>
-      <div class="result-value" id="deeplink-android">—</div>
+
+      <div class="result-card">
+        <div class="result-header">
+          <span class="result-label"><span class="dot" style="background:#6baaff"></span>Deep Link (Android)</span>
+          <button class="copy-btn" onclick="copyText('deeplink-android', this)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="result-value" id="deeplink-android">—</div>
+      </div>
+
+      <div class="result-card">
+        <div class="result-header">
+          <span class="result-label"><span class="dot" style="background:#ff6b6b"></span>Long redirect URL</span>
+          <button class="copy-btn" onclick="copyText('deeplink-smart', this)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy
+          </button>
+        </div>
+        <div class="result-value" id="deeplink-smart">—</div>
+      </div>
+
+      <div class="preview-card">
+        <div class="preview-title">// redirect flow</div>
+        <div class="flow-diagram">
+          <div class="flow-step">📲 Taps link in bio</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">🔍 Detects device</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step" id="flow-app">📱 Opens in App</div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-step">✅ Logged-in view</div>
+        </div>
+        <p style="font-size:11px;color:var(--muted);margin-top:12px;font-family:'DM Mono',monospace;">If app not installed → falls back to the web URL automatically.</p>
+      </div>
+
+      <!-- Redirect page code -->
+      <div>
+        <button class="expand-btn" onclick="toggleCode()">
+          <span>⟨/⟩ Download redirect page HTML</span>
+          <span id="expandIcon">↓</span>
+        </button>
+        <div class="code-block" id="codeBlock"></div>
+        <div style="display:none;gap:10px;margin-top:10px;flex-wrap:wrap;" id="codeActions">
+          <button class="copy-btn" id="copyCodeBtn" onclick="copyCode()" style="padding:9px 14px;">Copy HTML</button>
+          <button class="copy-btn" onclick="downloadCode()" style="padding:9px 14px;">↓ Download .html</button>
+        </div>
+      </div>
     </div>
 
-    <div class="result-card">
-      <div class="result-header">
-        <span class="result-label"><span class="dot" style="background:#ff6b6b"></span>Smart Redirect URL (put this in bio)</span>
-        <button class="copy-btn" onclick="copyText('deeplink-smart', this)">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          Copy
-        </button>
-      </div>
-      <div class="result-value" id="deeplink-smart">—</div>
-    </div>
-
-    <div class="preview-card">
-      <div class="preview-title">✦ How this redirect works</div>
-      <div class="flow-diagram">
-        <div class="flow-step">📲 User clicks link</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">🔍 Detects device</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step" id="flow-app">📱 Opens in App</div>
-        <div class="flow-arrow">→</div>
-        <div class="flow-step">✅ Logged-in view</div>
-      </div>
-      <p style="font-size:12px;color:var(--muted);margin-top:12px;font-family:'DM Mono',monospace;">If the app is not installed → falls back to web URL automatically.</p>
-    </div>
-
-    <!-- Redirect Page Code -->
-    <div class="redirect-section">
-      <button class="expand-btn" onclick="toggleCode()">
-        <span>⟨/⟩ View redirect page HTML (host this yourself)</span>
-        <span id="expandIcon">↓</span>
-      </button>
-      <div class="code-block" id="codeBlock"></div>
-      <div style="display:flex;gap:10px;margin-top:12px;" id="codeActions" style="display:none">
-        <button class="copy-btn" id="copyCodeBtn" onclick="copyCode()" style="padding:10px 16px;">
-          Copy HTML code
-        </button>
-        <button class="copy-btn" onclick="downloadCode()" style="padding:10px 16px;">
-          ↓ Download .html
-        </button>
-      </div>
-    </div>
   </div>
 
   <!-- How it works -->
@@ -631,97 +631,89 @@
       <div class="step-card">
         <div class="step-num">01</div>
         <h3>Paste your URL</h3>
-        <p>Enter any social media profile or content URL from YouTube, Instagram, TikTok, X, Spotify, or LinkedIn.</p>
+        <p>Enter any profile or content URL from YouTube, Instagram, TikTok, X, Spotify, or LinkedIn.</p>
       </div>
       <div class="step-card">
         <div class="step-num">02</div>
-        <h3>Get your deeplinks</h3>
-        <p>We generate native URI schemes for iOS and Android, plus a smart redirect page URL.</p>
+        <h3>Get a short link</h3>
+        <p>A smart redirect is built and instantly shortened via CleanURI — clean enough for any bio.</p>
       </div>
       <div class="step-card">
         <div class="step-num">03</div>
-        <h3>Add to your bio</h3>
-        <p>Put the smart redirect URL in your Instagram bio or anywhere else. It auto-detects the device.</p>
+        <h3>Paste in your bio</h3>
+        <p>Drop the short link into Instagram bio (or anywhere). One tap. That's it.</p>
       </div>
       <div class="step-card">
         <div class="step-num">04</div>
         <h3>Opens in-app</h3>
-        <p>Visitors are taken directly into the installed app — no browser friction, no login needed.</p>
+        <p>Visitors land directly in the native app — already logged in, no browser friction.</p>
       </div>
     </div>
   </div>
 
   <footer>
-    built with deeplinks · URI schemes · smart redirects<br>
-    <span style="opacity:0.4;margin-top:6px;display:block;">supports youtube · instagram · x · tiktok · spotify · linkedin</span>
+    built with deeplinks · URI schemes · CleanURI · smart redirects<br>
+    <span style="opacity:0.4;margin-top:6px;display:block;">youtube · instagram · x · tiktok · spotify · linkedin</span>
   </footer>
 
 </div>
 
 <script>
+/* ─── Platform config ─── */
 const PLATFORMS = {
   youtube: {
-    name: 'YouTube',
-    placeholder: 'https://youtube.com/@yourchannel',
+    name: 'YouTube', placeholder: 'https://youtube.com/@yourchannel', emoji: '▶️',
     patterns: [
-      { regex: /youtube\.com\/@([^/?]+)/, ios: id => `vnd.youtube://user/${id}`, android: id => `vnd.youtube://user/${id}` },
-      { regex: /youtube\.com\/channel\/([^/?]+)/, ios: id => `vnd.youtube://channel/${id}`, android: id => `vnd.youtube://channel/${id}` },
-      { regex: /youtube\.com\/watch\?v=([^&]+)/, ios: id => `vnd.youtube://${id}`, android: id => `vnd.youtube://${id}` },
-      { regex: /youtu\.be\/([^/?]+)/, ios: id => `vnd.youtube://${id}`, android: id => `vnd.youtube://${id}` },
-    ],
-    emoji: '▶️'
+      { regex: /youtube\.com\/@([^/?#]+)/, ios: id=>`vnd.youtube://user/${id}`, android: id=>`vnd.youtube://user/${id}` },
+      { regex: /youtube\.com\/channel\/([^/?#]+)/, ios: id=>`vnd.youtube://channel/${id}`, android: id=>`vnd.youtube://channel/${id}` },
+      { regex: /youtube\.com\/watch\?v=([^&#]+)/, ios: id=>`vnd.youtube://${id}`, android: id=>`vnd.youtube://${id}` },
+      { regex: /youtu\.be\/([^/?#]+)/, ios: id=>`vnd.youtube://${id}`, android: id=>`vnd.youtube://${id}` },
+    ]
   },
   instagram: {
-    name: 'Instagram',
-    placeholder: 'https://instagram.com/yourusername',
+    name: 'Instagram', placeholder: 'https://instagram.com/yourusername', emoji: '📸',
     patterns: [
-      { regex: /instagram\.com\/([^/?]+)/, ios: id => `instagram://user?username=${id}`, android: id => `instagram://user?username=${id}` },
-      { regex: /instagram\.com\/p\/([^/?]+)/, ios: id => `instagram://media?id=${id}`, android: id => `instagram://media?id=${id}` },
-    ],
-    emoji: '📸'
+      { regex: /instagram\.com\/p\/([^/?#]+)/, ios: id=>`instagram://media?id=${id}`, android: id=>`instagram://media?id=${id}` },
+      { regex: /instagram\.com\/([^/?#]+)/, ios: id=>`instagram://user?username=${id}`, android: id=>`instagram://user?username=${id}` },
+    ]
   },
   twitter: {
-    name: 'X / Twitter',
-    placeholder: 'https://x.com/yourusername',
+    name: 'X / Twitter', placeholder: 'https://x.com/yourusername', emoji: '🐦',
     patterns: [
-      { regex: /(?:twitter|x)\.com\/([^/?]+)/, ios: id => `twitter://user?screen_name=${id}`, android: id => `twitter://user?screen_name=${id}` },
-      { regex: /(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/, ios: id => `twitter://status?id=${id}`, android: id => `twitter://status?id=${id}` },
-    ],
-    emoji: '🐦'
+      { regex: /(?:twitter|x)\.com\/[^/]+\/status\/(\d+)/, ios: id=>`twitter://status?id=${id}`, android: id=>`twitter://status?id=${id}` },
+      { regex: /(?:twitter|x)\.com\/([^/?#]+)/, ios: id=>`twitter://user?screen_name=${id}`, android: id=>`twitter://user?screen_name=${id}` },
+    ]
   },
   tiktok: {
-    name: 'TikTok',
-    placeholder: 'https://tiktok.com/@yourusername',
+    name: 'TikTok', placeholder: 'https://tiktok.com/@yourusername', emoji: '🎵',
     patterns: [
-      { regex: /tiktok\.com\/@([^/?]+)/, ios: id => `tiktok://user/@${id}`, android: id => `tiktok://user/@${id}` },
-      { regex: /tiktok\.com\/video\/(\d+)/, ios: id => `tiktok://video/${id}`, android: id => `tiktok://video/${id}` },
-    ],
-    emoji: '🎵'
+      { regex: /tiktok\.com\/@([^/?#]+)/, ios: id=>`tiktok://user/@${id}`, android: id=>`tiktok://user/@${id}` },
+      { regex: /tiktok\.com\/video\/(\d+)/, ios: id=>`tiktok://video/${id}`, android: id=>`tiktok://video/${id}` },
+    ]
   },
   spotify: {
-    name: 'Spotify',
-    placeholder: 'https://open.spotify.com/artist/...',
+    name: 'Spotify', placeholder: 'https://open.spotify.com/artist/...', emoji: '🎧',
     patterns: [
-      { regex: /spotify\.com\/artist\/([^/?]+)/, ios: id => `spotify:artist:${id}`, android: id => `spotify:artist:${id}` },
-      { regex: /spotify\.com\/track\/([^/?]+)/, ios: id => `spotify:track:${id}`, android: id => `spotify:track:${id}` },
-      { regex: /spotify\.com\/playlist\/([^/?]+)/, ios: id => `spotify:playlist:${id}`, android: id => `spotify:playlist:${id}` },
-      { regex: /spotify\.com\/album\/([^/?]+)/, ios: id => `spotify:album:${id}`, android: id => `spotify:album:${id}` },
-    ],
-    emoji: '🎧'
+      { regex: /spotify\.com\/artist\/([^/?#]+)/, ios: id=>`spotify:artist:${id}`, android: id=>`spotify:artist:${id}` },
+      { regex: /spotify\.com\/track\/([^/?#]+)/, ios: id=>`spotify:track:${id}`, android: id=>`spotify:track:${id}` },
+      { regex: /spotify\.com\/playlist\/([^/?#]+)/, ios: id=>`spotify:playlist:${id}`, android: id=>`spotify:playlist:${id}` },
+      { regex: /spotify\.com\/album\/([^/?#]+)/, ios: id=>`spotify:album:${id}`, android: id=>`spotify:album:${id}` },
+    ]
   },
   linkedin: {
-    name: 'LinkedIn',
-    placeholder: 'https://linkedin.com/in/yourprofile',
+    name: 'LinkedIn', placeholder: 'https://linkedin.com/in/yourprofile', emoji: '💼',
     patterns: [
-      { regex: /linkedin\.com\/in\/([^/?]+)/, ios: id => `linkedin://profile/${id}`, android: id => `linkedin://profile/${id}` },
-      { regex: /linkedin\.com\/company\/([^/?]+)/, ios: id => `linkedin://company/${id}`, android: id => `linkedin://company/${id}` },
-    ],
-    emoji: '💼'
+      { regex: /linkedin\.com\/in\/([^/?#]+)/, ios: id=>`linkedin://profile/${id}`, android: id=>`linkedin://profile/${id}` },
+      { regex: /linkedin\.com\/company\/([^/?#]+)/, ios: id=>`linkedin://company/${id}`, android: id=>`linkedin://company/${id}` },
+    ]
   }
 };
 
+/* ─── Your hosted Vercel redirect base ─── */
+const REDIRECT_BASE = 'https://deeplink-bay.vercel.app/';
+
 let currentPlatform = 'youtube';
-let currentDeeplinks = {};
+let currentBioLink = '';
 let generatedHTML = '';
 
 function selectPlatform(btn) {
@@ -733,17 +725,59 @@ function selectPlatform(btn) {
   clearError();
 }
 
-function clearError() {
-  document.getElementById('errorMsg').classList.remove('visible');
+function clearError() { document.getElementById('errorMsg').classList.remove('visible'); }
+function showError(msg) { const el = document.getElementById('errorMsg'); el.textContent = msg; el.classList.add('visible'); }
+
+/* ─── URL Shortener with fallback chain ─── */
+async function shortenUrl(longUrl) {
+  // 1️⃣ CleanURI — free, CORS-enabled, no key
+  try {
+    const res = await fetch('https://cleanuri.com/api/v1/shorten', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: 'url=' + encodeURIComponent(longUrl),
+      signal: AbortSignal.timeout(6000)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.result_url) return { url: data.result_url, via: 'cleanuri.com' };
+    }
+  } catch(e) { console.warn('CleanURI failed:', e.message); }
+
+  // 2️⃣ spoo.me — free, CORS-enabled, no key
+  try {
+    const res = await fetch('https://spoo.me/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+      body: 'url=' + encodeURIComponent(longUrl),
+      signal: AbortSignal.timeout(6000)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.short_url) return { url: data.short_url, via: 'spoo.me' };
+    }
+  } catch(e) { console.warn('spoo.me failed:', e.message); }
+
+  // 3️⃣ TinyURL via allorigins proxy (CORS workaround)
+  try {
+    const tinyRes = await fetch(
+      `https://api.allorigins.win/get?url=${encodeURIComponent('https://tinyurl.com/api-create.php?url=' + encodeURIComponent(longUrl))}`,
+      { signal: AbortSignal.timeout(8000) }
+    );
+    if (tinyRes.ok) {
+      const data = await tinyRes.json();
+      if (data && data.contents && data.contents.startsWith('https://tinyurl.com/')) {
+        return { url: data.contents.trim(), via: 'tinyurl.com' };
+      }
+    }
+  } catch(e) { console.warn('TinyURL proxy failed:', e.message); }
+
+  // Final fallback — full URL
+  return { url: longUrl, via: null };
 }
 
-function showError(msg) {
-  const el = document.getElementById('errorMsg');
-  el.textContent = msg;
-  el.classList.add('visible');
-}
-
-function generateDeeplink() {
+/* ─── Main ─── */
+async function generateDeeplink() {
   const url = document.getElementById('urlInput').value.trim();
   if (!url) { showError('Please enter a URL first.'); return; }
 
@@ -752,10 +786,7 @@ function generateDeeplink() {
 
   for (const p of platform.patterns) {
     const m = url.match(p.regex);
-    if (m) {
-      matched = { id: m[1], ios: p.ios(m[1]), android: p.android(m[1]) };
-      break;
-    }
+    if (m) { matched = { id: m[1], ios: p.ios(m[1]), android: p.android(m[1]) }; break; }
   }
 
   if (!matched) {
@@ -763,25 +794,58 @@ function generateDeeplink() {
     return;
   }
 
-  currentDeeplinks = { ios: matched.ios, android: matched.android, web: url };
+  // Build long redirect URL
+  const longUrl = `${REDIRECT_BASE}?ios=${encodeURIComponent(matched.ios)}&android=${encodeURIComponent(matched.android)}&fallback=${encodeURIComponent(url)}&platform=${encodeURIComponent(platform.name)}`;
 
-  const smartUrl = `deeplink.html?ios=${encodeURIComponent(matched.ios)}&android=${encodeURIComponent(matched.android)}&fallback=${encodeURIComponent(url)}`;
-
+  // Populate technical fields immediately
   document.getElementById('deeplink-ios').textContent = matched.ios;
   document.getElementById('deeplink-android').textContent = matched.android;
-  document.getElementById('deeplink-smart').textContent = smartUrl;
+  document.getElementById('deeplink-smart').textContent = longUrl;
   document.getElementById('flow-app').textContent = platform.emoji + ' Opens in ' + platform.name;
 
-  generatedHTML = generateRedirectHTML(matched.ios, matched.android, url, platform.name);
-  document.getElementById('codeBlock').textContent = generatedHTML;
-  document.getElementById('codeBlock').classList.remove('visible');
-  document.getElementById('expandIcon').textContent = '↓';
+  // Show results, set loading state
+  const bioEl = document.getElementById('bioLinkValue');
+  const statusEl = document.getElementById('shortenerStatus');
+  const genBtn = document.getElementById('generateBtn');
+  const copyBtn = document.getElementById('copyBioBtn');
 
   document.getElementById('results').classList.add('visible');
   document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  bioEl.textContent = 'Shortening…';
+  bioEl.classList.add('shimmer');
+  statusEl.className = 'shortener-status';
+  statusEl.textContent = '⏳ Calling URL shortener…';
+  genBtn.classList.add('loading');
+  genBtn.disabled = true;
+  copyBtn.disabled = true;
+
+  const result = await shortenUrl(longUrl);
+
+  bioEl.classList.remove('shimmer');
+  bioEl.textContent = result.url;
+  currentBioLink = result.url;
+  genBtn.classList.remove('loading');
+  genBtn.disabled = false;
+  copyBtn.disabled = false;
+
+  if (result.via) {
+    statusEl.className = 'shortener-status ok';
+    statusEl.textContent = `✓ Shortened via ${result.via} — copy and paste in your bio!`;
+  } else {
+    statusEl.className = 'shortener-status err';
+    statusEl.textContent = '⚠ Shortener unavailable — full URL shown. Still works, just longer!';
+  }
+
+  generatedHTML = buildRedirectHTML(matched.ios, matched.android, url, platform.name);
+  document.getElementById('codeBlock').textContent = generatedHTML;
+  document.getElementById('codeBlock').classList.remove('visible');
+  document.getElementById('expandIcon').textContent = '↓';
+  document.getElementById('codeActions').style.display = 'none';
 }
 
-function generateRedirectHTML(iosLink, androidLink, fallback, platformName) {
+/* ─── Redirect page HTML ─── */
+function buildRedirectHTML(iosLink, androidLink, fallback, platformName) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -789,55 +853,50 @@ function generateRedirectHTML(iosLink, androidLink, fallback, platformName) {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Opening ${platformName}...</title>
   <style>
-    body { margin: 0; display: flex; align-items: center; justify-content: center;
-           min-height: 100vh; font-family: system-ui, sans-serif;
-           background: #0a0a0f; color: #e8e8f0; text-align: center; padding: 20px; }
-    .card { max-width: 320px; }
-    h2 { font-size: 1.4rem; margin-bottom: 8px; }
-    p { color: #5a5a7a; font-size: 14px; margin-bottom: 24px; }
-    a { display: inline-block; background: #7fffb2; color: #000; padding: 12px 28px;
-        border-radius: 100px; text-decoration: none; font-weight: 700; font-size: 15px; }
-    a:hover { background: #a0ffcc; }
+    body { margin:0; display:flex; align-items:center; justify-content:center;
+           min-height:100vh; font-family:system-ui,sans-serif;
+           background:#0a0a0f; color:#e8e8f0; text-align:center; padding:20px; }
+    .card { max-width:320px; }
+    h2 { font-size:1.4rem; margin-bottom:8px; }
+    p { color:#5a5a7a; font-size:14px; margin-bottom:24px; }
+    a { display:inline-block; background:#7fffb2; color:#000; padding:12px 28px;
+        border-radius:100px; text-decoration:none; font-weight:700; font-size:15px; }
   </style>
 </head>
 <body>
   <div class="card">
     <h2>Opening ${platformName}…</h2>
-    <p>You'll be redirected to the app. If it doesn't open, tap the button below.</p>
-    <a href="${fallback}" id="fallback">Open in Browser</a>
+    <p>Redirecting to the app. If it doesn't open automatically, tap below.</p>
+    <a href="${fallback}">Open in Browser</a>
   </div>
   <script>
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
     const isAndroid = /Android/i.test(ua);
-
-    const iosScheme = "${iosLink}";
-    const androidScheme = "${androidLink}";
-    const fallbackUrl = "${fallback}";
-
-    let scheme = isIOS ? iosScheme : isAndroid ? androidScheme : null;
-
+    const scheme = isIOS ? "${iosLink}" : isAndroid ? "${androidLink}" : null;
     if (scheme) {
-      // Try to open native app
       window.location = scheme;
-      // If app not installed, fall back after 2s
-      setTimeout(() => { window.location = fallbackUrl; }, 2000);
+      setTimeout(() => { window.location = "${fallback}"; }, 2000);
     } else {
-      // Desktop: just go to web
-      window.location = fallbackUrl;
+      window.location = "${fallback}";
     }
   <\/script>
 </body>
 </html>`;
 }
 
-function toggleCode() {
-  const block = document.getElementById('codeBlock');
-  const icon = document.getElementById('expandIcon');
-  const actions = document.getElementById('codeActions');
-  const visible = block.classList.toggle('visible');
-  icon.textContent = visible ? '↑' : '↓';
-  if (actions) actions.style.display = visible ? 'flex' : 'none';
+/* ─── UI helpers ─── */
+function copyBioLink() {
+  if (!currentBioLink) return;
+  navigator.clipboard.writeText(currentBioLink).then(() => {
+    const btn = document.getElementById('copyBioBtn');
+    btn.innerHTML = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Copy link';
+      btn.classList.remove('copied');
+    }, 2500);
+  });
 }
 
 function copyText(id, btn) {
@@ -849,11 +908,26 @@ function copyText(id, btn) {
   });
 }
 
+function toggleDetails() {
+  const body = document.getElementById('detailsBody');
+  const icon = document.getElementById('detailsIcon');
+  icon.textContent = body.classList.toggle('open') ? '↑' : '↓';
+}
+
+function toggleCode() {
+  const block = document.getElementById('codeBlock');
+  const icon = document.getElementById('expandIcon');
+  const actions = document.getElementById('codeActions');
+  const vis = block.classList.toggle('visible');
+  icon.textContent = vis ? '↑' : '↓';
+  actions.style.display = vis ? 'flex' : 'none';
+}
+
 function copyCode() {
   navigator.clipboard.writeText(generatedHTML).then(() => {
     const btn = document.getElementById('copyCodeBtn');
     btn.textContent = '✓ Copied!';
-    setTimeout(() => { btn.textContent = 'Copy HTML code'; }, 2000);
+    setTimeout(() => { btn.textContent = 'Copy HTML'; }, 2000);
   });
 }
 
